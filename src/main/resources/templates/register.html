@@ -1,0 +1,77 @@
+<html>
+    <head>
+    <title>Aplikacja - Registration</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    </head>
+    <script>
+        function sendPostRequest(){
+            var email=$("input[name=email]");
+            var username=$("input[name=username]");
+            var password=$("input[name=password]");
+            //$.post(post( "api/register", { email: email, username: username,password: password } ));
+            if(email.val() !=="" && username.val() !=="" && password.val() !==""){
+                var user={ email: email.val(), username: username.val(),password: password.val() };
+                $.ajax({
+                    type:'POST',
+                    url:"registerUser",
+                    data:JSON.stringify(user),
+                    contentType: "application/json",
+                    success: function(i){
+                        clearInputs(email,username,password);
+                    }
+                });
+            }
+        }
+        function clearInputs(email,username,password){
+            email.val('');
+            username.val('');
+            password.val('');
+        }
+    </script>
+  <body>
+     
+      
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <a href="/projekt" class="navbar-brand">Aplikacja</a>
+ 
+        <button class="navbar-toggle" data-toggle="collapse" data-target=".navHeaderCollapse">
+            <span class="glyphicon glyphicon-list"></span>
+        </button>
+        
+
+        <div class="collapse navbar-collapse navHeaderCollapse">
+        <div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/projekt">Login</a></li>
+                
+            </ul>
+            </div>
+        </div>
+     </div>
+</nav>
+<div class="container" style="padding-top:40px">
+<div class="col-sm-6 col-md-4 col-md-offset-4">
+            <!--<form class="form-signin" method="post" action="api/register">-->
+                <h2 class="form-signin-heading">Register</h2>
+                <input name="email" type="email" class="form-control" placeholder="Email" required autofocus />
+                <input type="text" name="username" class="form-control" placeholder="Nazwa użytkownika" required autofocus />
+                <input name="password" type="password" class="form-control" placeholder="Password" required />
+                <button onclick="sendPostRequest()" class="btn btn-lg btn-primary btn-block" >Register</button>
+            <!--</form>-->
+        </div>
+        </div>
+            <footer class="footer">
+    <div class="container">
+        <p class="navbar-text">
+            Aplikacja - developed by <a href="#">Aplikacja.pl</a>
+        </p>
+    </div>
+</footer>
+
+     </body>
+     </html>
