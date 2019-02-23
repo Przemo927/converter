@@ -2,6 +2,8 @@ package pl.converter.converter.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.UniqueElements;
+import pl.converter.converter.validation.UniqueUsername;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -13,6 +15,7 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
+@NamedNativeQueries({@NamedNativeQuery(name = "User.checkPresenceOfUsername",query = "SELECT 1 FROM User WHERE username=:username")})
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -22,6 +25,7 @@ public class User implements Serializable {
 	@Column(nullable = false, unique = true)
     private long id;
 	@Size(max=45)
+    @UniqueUsername
     @NotNull
     @Pattern(regexp = "[A-Z]{1}[a-z0-9]+",message = "First letter of username should be uppercase.")
 	@Column(nullable = false, unique = true, length=45)
