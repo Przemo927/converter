@@ -3,6 +3,7 @@ package pl.converter.converter.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.UniqueElements;
+import pl.converter.converter.validation.EmailUnique;
 import pl.converter.converter.validation.UniqueUsername;
 
 import javax.persistence.*;
@@ -15,7 +16,10 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
-@NamedNativeQueries({@NamedNativeQuery(name = "User.checkPresenceOfUsername",query = "SELECT 1 FROM User WHERE username=:username")})
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "User.checkPresenceOfUsername",query = "SELECT COUNT(username) FROM User WHERE username=:username"),
+        @NamedNativeQuery(name = "User.checkPresenceOfEmail",query = "SELECT COUNT(email) FROM User WHERE email=:email")
+})
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -32,6 +36,7 @@ public class User implements Serializable {
     private String username;
 	@Size(max=60)
     @NotNull
+    @EmailUnique
     @Email
 	@Column(nullable = false, unique = true, length=60)
     private String email;

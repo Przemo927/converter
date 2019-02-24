@@ -39,6 +39,10 @@ public class UserService {
     }
 
     public boolean checkPresenceOfUsername(String username){
-        return userRepository.checkPresenceOfUsername(username)==1;
+        return userRepository.checkPresenceOfUsername(username) == 1;
+    }
+
+    public boolean checkPresenceOfEmail(String email){
+        return userRepository.checkPresenceOfEmail(email)==1;
     }
 }
