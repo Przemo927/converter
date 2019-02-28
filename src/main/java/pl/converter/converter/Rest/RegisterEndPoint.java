@@ -22,7 +22,7 @@ public class RegisterEndPoint {
         this.userService=userService;
     }
 
-    @RequestMapping(name = "registerUser", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "registerUser", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity registerUser(@RequestBody @Valid User user){
         this.userService.registerUser(user);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
