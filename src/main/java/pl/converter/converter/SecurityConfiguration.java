@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import pl.converter.converter.security.PBKDF2Encoder;
 
@@ -23,14 +22,18 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     @Value("${spring.queries.users-query}")
     private String usersQuery;
 
     @Value("${spring.queries.roles-query}")
     private String rolesQuery;
+
+    @Autowired
+    public SecurityConfiguration(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -43,7 +46,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http
                 .csrf().disable()
                 .authorizeRequests()
@@ -53,7 +55,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/register",true)
+                .defaultSuccessUrl("/home",true)
                 .permitAll()
                 .usernameParameter("username")
                 .passwordParameter("password")
@@ -63,7 +65,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.expressionHandler(new DefaultWebSecurityExpressionHandler() {
             @Override
             protected SecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication, FilterInvocation fi) {
