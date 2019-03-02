@@ -1,0 +1,31 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div>
+        <div class="pull-left">
+          <a href="/" class="navbar-brand navbar-left">Converter</a>
+        </div>
+    <div style="width: 80%; margin: auto;">
+        <button id="top" class="navbar-toggle" data-toggle="collapse" data-target=".navHeaderCollapse" style="color:white">
+            <span class="glyphicon glyphicon-list"></span>
+        </button>
+        <div class="collapse navbar-collapse navHeaderCollapse">
+            <ul class="nav navbar-nav navbar-left">
+                <li><a href="#"><span class="navBoxShadow">Main Page</span></a></li>
+                <li><a routerLink="adddiscovery"><span class="navBoxShadow">New Project</span></a></li>
+            </ul>
+          <ul style="margin-right: 10px" class="nav navbar-nav navbar-right">
+            <li class=""><a href="#"><span class="navBoxShadow">Logout</span></a></li>
+          </ul>
+        </div>
+    </div>
+  </div>
+</nav>
+<div id="mainMenu" style="padding:10px;justify-content:center;min-height: 100%">
+<router-outlet id="router"></router-outlet>
+</div>
+<footer class="footer" style="min-width:250px">
+    <div class="container">
+        <p class="text-center">
+            Aplikacja - developed by <a href="#">Aplikacja.pl</a>
+        </p>
+    </div>
+</footer>
