@@ -1,4 +1,3 @@
-
 export class ZoomRenderer {
 
   private zooming;
@@ -7,13 +6,13 @@ export class ZoomRenderer {
   private widthElement;
   private heightElement;
 
-  constructor(element:HTMLElement) {
+  constructor(element: HTMLElement) {
     this.zooming = undefined;
     this.element = element;
     this.currentTransformation = new Transformations(0, 0, 0, 0, 1);
     this.initializeEventHandlers();
-    this.widthElement=element.clientWidth;
-    this.heightElement=element.clientHeight;
+    this.widthElement = element.clientWidth;
+    this.heightElement = element.clientHeight;
   }
 
   static getTransform(transformation) {
@@ -40,41 +39,41 @@ export class ZoomRenderer {
     this.element.style.setProperty("-webkit-transform", transform);
   };
 
-  private initializeEventHandlers(){
+  private initializeEventHandlers() {
 
-    window.addEventListener('resize',function (e) {
-      this.widthElement=this.element.clientWidth;
-      this.heightElement=this.element.clientHeight;
+    window.addEventListener('resize', function (e) {
+      this.widthElement = this.element.clientWidth;
+      this.heightElement = this.element.clientHeight;
     }.bind(this));
 
-    document.addEventListener('touchmove', function(e) {
+    document.addEventListener('touchmove', function (e) {
       e.preventDefault();
     }, false);
 
-    this.element.addEventListener('dragstart', function(e) {
+    this.element.addEventListener('dragstart', function (e) {
       e.preventDefault();
     });
 
-    this.element.addEventListener("wheel", function(e) {
+    this.element.addEventListener("wheel", function (e) {
       e.preventDefault();
       if (this.zooming == undefined) {
         const rect = this.element.getBoundingClientRect();
         const offsetLeft = rect.left + document.body.scrollLeft;
         const offsetTop = rect.top + document.body.scrollTop;
-        const zooming = new MouseZoom(this.currentTransformation, e.pageX, e.pageY, offsetLeft, offsetTop, e.deltaY,this.widthElement,this.heightElement);
-        this.zooming=zooming;
+        const zooming = new MouseZoom(this.currentTransformation, e.pageX, e.pageY, offsetLeft, offsetTop, e.deltaY, this.widthElement, this.heightElement);
+        this.zooming = zooming;
 
         const newTransformation = zooming.zoom();
         this.applyTransformations(newTransformation);
-        this.currentTransformation=newTransformation;
-        this.zooming=undefined;
+        this.currentTransformation = newTransformation;
+        this.zooming = undefined;
 
-        const maxY=this.element.clientHeight;
-        const maxX=this.element.clientWidth;
+        const maxY = this.element.clientHeight;
+        const maxX = this.element.clientWidth;
       }
       return false;
     }.bind(this));
-    }
+  }
 }
 
 export class MouseZoom {
@@ -99,7 +98,7 @@ export class MouseZoom {
     this.height = height;
   }
 
-  zoom():Transformations {
+  zoom(): Transformations {
     const previousScale = this.currentTransformation.getScale();
     let newScale = previousScale + this.delta / 10;
     const maxscale = 20;
@@ -108,17 +107,17 @@ export class MouseZoom {
     } else if (newScale > maxscale) {
       newScale = maxscale;
     }
-    const imageX:any = (this.mouseX - this.offsetLeft).toFixed(2);
-    const imageY:any = (this.mouseY - this.offsetTop).toFixed(2);
+    const imageX: any = (this.mouseX - this.offsetLeft).toFixed(2);
+    const imageY: any = (this.mouseY - this.offsetTop).toFixed(2);
 
-    const prevOrigX:any = (this.currentTransformation.getOriginX() * previousScale).toFixed(2);
-    const prevOrigY:any = (this.currentTransformation.getOriginY() * previousScale).toFixed(2);
+    const prevOrigX: any = (this.currentTransformation.getOriginX() * previousScale).toFixed(2);
+    const prevOrigY: any = (this.currentTransformation.getOriginY() * previousScale).toFixed(2);
 
-    let translateX:any = this.currentTransformation.getTranslateX();
-    let translateY:any = this.currentTransformation.getTranslateY();
+    let translateX: any = this.currentTransformation.getTranslateX();
+    let translateY: any = this.currentTransformation.getTranslateY();
 
-    let newOrigX:any = imageX / previousScale;
-    let newOrigY:any = imageY / previousScale;
+    let newOrigX: any = imageX / previousScale;
+    let newOrigY: any = imageY / previousScale;
 
     if ((Math.abs(imageX - prevOrigX) > 1 || Math.abs(imageY - prevOrigY) > 1) && previousScale < maxscale) {
       translateX = translateX + (imageX - prevOrigX) * (1 - 1 / previousScale);
@@ -147,6 +146,7 @@ export class MouseZoom {
     return new Transformations(newOrigX, newOrigY, translateX, translateY, newScale);
   };
 }
+
 export class Transformations {
 
   private originX;
@@ -166,15 +166,19 @@ export class Transformations {
   getScale() {
     return this.scale;
   };
+
   getOriginX() {
     return this.originX;
   };
+
   getOriginY() {
     return this.originY;
   };
+
   getTranslateX() {
     return this.translateX;
   };
+
   getTranslateY() {
     return this.translateY;
   };
