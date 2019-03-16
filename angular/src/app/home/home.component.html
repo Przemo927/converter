@@ -1,3 +1,10 @@
-<p>
-  home works!
-</p>
+<div style="display: inline-flex; height: 100%;width: 100%">
+  <div style="background-color: cadetblue;width: 20%;height: 100%;overflow: hidden">
+    <span (click)="openFileLoader()">Load Layer</span>
+    <span (click)="clearContainer()">Load</span>
+  </div>
+  <div id="container" style="width: 80%;height: 100%">
+  </div>
+</div>
+<input (change)="loadFile($event)" id="loadFile" style="display: none" type="file"/>
+<script src="../../../node_modules/tiff.js/tiff.js"></script>

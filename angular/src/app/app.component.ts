@@ -21,7 +21,9 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.nav = document.getElementsByTagName("nav")[0];
     this.navHeight = this.nav.offsetHeight;
-    this.addRouteChangeListener();
+    this.panelBody=document.getElementById("mainMenu");
+    this.setUpTopOfMainDivDependOfPositionOfNavbar();
+    this.resizeMainDiv();
   }
 
   private addRouteChangeListener() {
@@ -30,19 +32,19 @@ export class AppComponent implements OnInit {
         this.panelBody = document.getElementById("mainMenu");
       }
     });
-    this.setUpTopMarginOfMainDivDependOfPositionOfNavbar();
+    this.setUpTopOfMainDivDependOfPositionOfNavbar();
   }
 
-  private setUpTopMarginOfMainDivDependOfPositionOfNavbar(){
+  private setUpTopOfMainDivDependOfPositionOfNavbar(){
     if (this.navHeight !== this.nav.offsetHeight) {
       this.navHeight = this.nav.offsetHeight;
     }
-    if (this.panelBody === undefined || this.panelBody === null) {
-      this.panelBody=document.getElementById("mainMenu");
-    }
     if (this.panelBody !== undefined && this.panelBody !== null) {
-      this.panelBody.style.marginTop = this.navHeight+5;
+      this.panelBody.style.top = this.navHeight+5;
     }
+  }
+  private resizeMainDiv(){
+    this.panelBody.style.height='calc(100% - '+2*this.navHeight+'px)';
   }
 
 }

@@ -9,7 +9,7 @@
         </button>
         <div class="collapse navbar-collapse navHeaderCollapse">
             <ul class="nav navbar-nav navbar-left">
-                <li><a href="#"><span class="navBoxShadow">Main Page</span></a></li>
+                <li><a routerLink="home"><span class="navBoxShadow">Main Page</span></a></li>
                 <li><a routerLink="adddiscovery"><span class="navBoxShadow">New Project</span></a></li>
             </ul>
           <ul style="margin-right: 10px" class="nav navbar-nav navbar-right">
@@ -19,7 +19,7 @@
     </div>
   </div>
 </nav>
-<div id="mainMenu" style="padding:10px;justify-content:center;min-height: 100%">
+<div class="boxShadow" id="mainMenu" style="justify-content:center;">
 <router-outlet id="router"></router-outlet>
 </div>
 <footer class="footer" style="min-width:250px">
