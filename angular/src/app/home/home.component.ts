@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ZoomRenderer} from "../converter/zoomrenderer";
+import {Converter} from "../converter/converter";
 
 declare var Tiff: any;
 
@@ -71,7 +71,7 @@ export class HomeComponent implements OnInit {
       tiffCanvas.style.height = '100%';
       this.clearContainer();
       this.layerContainer.appendChild(tiffCanvas);
-      this.renderer = new ZoomRenderer(tiffCanvas);
+      Converter.builder().setImage(tiffCanvas).isDraggable().isZoomable().build();
     };
   }
 
