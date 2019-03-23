@@ -1,7 +1,4 @@
-import {StringUtils} from "../stringutils";
 import {TransformUtils} from "../transformutils";
-import {Transformations} from "./zoomableelement";
-import {_document} from "@angular/platform-browser/src/browser";
 
 export class DraggableElement {
 

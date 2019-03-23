@@ -6,7 +6,6 @@ export class Converter {
   private element;
   private zoom = false;
   private dragg = false;
-  private renderer;
 
   public static builder() {
     return new Converter();
