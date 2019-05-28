@@ -20,9 +20,11 @@ export class DraggableElement {
   public prepareDraggableElement(element: HTMLElement) {
     const dragBind = this.drag.bind(this);
     element.addEventListener('mousedown', function (e: MouseEvent) {
-      this.initialX = this.currentX = e.clientX;
-      this.initialY = this.currentY = e.clientY;
-      element.addEventListener("mousemove", dragBind);
+      if (!e.ctrlKey) {
+        this.initialX = this.currentX = e.clientX;
+        this.initialY = this.currentY = e.clientY;
+        element.addEventListener("mousemove", dragBind);
+      }
     }.bind(this));
 
     element.addEventListener("mouseup", function (e) {
@@ -58,5 +60,5 @@ export class DraggableElement {
     this.initialX = this.currentX;
     this.initialY = this.currentY;
     TransformUtils.moveOrigin(this.element, offsetX, offsetY, this.container);
-  };
+  }
 }
