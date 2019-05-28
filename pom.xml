@@ -213,7 +213,7 @@
 								</goals>
 								<configuration>
 									<overwrite>true</overwrite>
-									<outputDirectory>${project.build.directory}/converter/WEB-INF/classes/templates/anguler</outputDirectory>
+									<outputDirectory>${project.build.directory}/converter/WEB-INF/classes/templates/angular</outputDirectory>
 									<resources>
 										<resource>
 											<directory>${project.basedir}/angular/dist</directory>
