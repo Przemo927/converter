@@ -2,6 +2,9 @@
   <div style="background-color: cadetblue;width: 20%;height: 100%;overflow: hidden">
     <span (click)="openFileLoader()">Load Layer</span>
     <span (click)="clearContainer()">Load</span>
+    <span id="addPattern" #patternButton [ngStyle]="this.patternButton.addPattern ? {'font-weight':'bold','border-width':'3px'}:''" (click)=" addNewPattern($event)">Create
+    Pattern</span>
+    <span id="removePattern" #removePatternButton [ngStyle]="this.removePatternButton.removePattern ? {'font-weight':'bold','border-width':'3px'}:''" (click)="removePattern($event)">Remove Pattern</span>
   </div>
   <div id="container" style="width: 80%;height: 100%">
   </div>

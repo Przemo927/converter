@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Converter} from "../converter/converter";
+import {StringUtils} from "../stringutils";
 
 declare var Tiff: any;
 
@@ -13,8 +14,6 @@ export class HomeComponent implements OnInit {
   private tifType = ['tiff', 'tif'];
   private fileLoader: any;
   private layerContainer: HTMLElement;
-  private scale = 1;
-  private renderer;
 
   constructor() {
   }
@@ -45,7 +44,7 @@ export class HomeComponent implements OnInit {
   readStandardImage(file: File) {
     const fileReader = new FileReader();
     fileReader.readAsDataURL(file);
-    fileReader.onloadend = (e) => {
+    fileReader.onloadend = () => {
       const srcElement = document.createElement('src');
       (<HTMLSourceElement>srcElement).src = fileReader.result.toString();
       this.clearContainer();
@@ -59,8 +58,6 @@ export class HomeComponent implements OnInit {
     Tiff.initialize({
       TOTAL_MEMORY: 100000000
     });
-    let positionX;
-    let positionY;
     fileReader.onloadend = (e) => {
       const tiff = new Tiff({
         buffer: (<CustomEventTarget>e.target).result
@@ -71,13 +68,39 @@ export class HomeComponent implements OnInit {
       tiffCanvas.style.height = '100%';
       this.clearContainer();
       this.layerContainer.appendChild(tiffCanvas);
-      Converter.builder().setImage(tiffCanvas).isDraggable().isZoomable().build();
+      Converter.builder().setContainer(this.layerContainer).setImage(tiffCanvas).isDraggable().isZoomable().addFunctionalityOfPattern().build();
     };
   }
 
-  private clearContainer() {
+  public clearContainer() {
     while (this.layerContainer.firstChild) {
       this.layerContainer.removeChild(this.layerContainer.firstChild);
+    }
+  }
+
+  private addNewPattern(event) {
+    let target = event.target;
+    if (target.addPattern === undefined) {
+      Object.defineProperty(target, StringUtils.ADD_PATTERN, {value: true, writable: true});
+    } else {
+      target.addPattern === true ? target.addPattern = false : target.addPattern = true;
+    }
+    let removeButton = target.nextElementSibling;
+    if (removeButton.removePattern == true) {
+      removeButton.removePattern = false;
+    }
+  }
+
+  private removePattern(event) {
+    const target = event.target;
+    if (target.removePattern === undefined) {
+      Object.defineProperty(target, StringUtils.REMOVE_PATTERN, {value: true, writable: true});
+    } else {
+      target.removePattern === true ? target.removePattern = false : target.removePattern = true;
+    }
+    let addButton = target.previousElementSibling;
+    if (addButton.addPattern == true) {
+      addButton.addPattern = false;
     }
   }
 }
