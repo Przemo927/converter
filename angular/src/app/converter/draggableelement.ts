@@ -59,6 +59,6 @@ export class DraggableElement {
     this.currentY += offsetY;
     this.initialX = this.currentX;
     this.initialY = this.currentY;
-    TransformUtils.moveOrigin(this.element, offsetX, offsetY, this.container);
+    TransformUtils.moveOrigin(this.element, offsetX, offsetY);
   }
 }

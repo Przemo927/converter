@@ -1,5 +1,4 @@
 import {StringUtils} from "./stringutils";
-import {ZoomableElement} from "./converter/zoomableelement";
 
 export class TransformUtils {
 
@@ -9,12 +8,12 @@ export class TransformUtils {
   public static ORIGINX = 'originX';
   public static ORIGINY = 'originY';
 
-  public static moveOrigin(element: HTMLElement, offsetX: number, offsetY: number, container: HTMLElement) {
+  public static moveOrigin(element: HTMLElement, offsetX: number, offsetY: number) {
     const scale = this.getCurrentZoomOfElement(element);
 
     const originValues = this.getOriginCoordinatesOfElement(element);
 
-    if(this.currentOriginX === undefined && this.currentOriginY === undefined){
+    if (this.currentOriginX === undefined && this.currentOriginY === undefined) {
       this.currentOriginX = originValues.get(this.ORIGINX);
       this.currentOriginY = originValues.get(this.ORIGINY);
     }
@@ -51,6 +50,6 @@ export class TransformUtils {
       originValues[1] = originValues[1].replace(StringUtils.SPACE, StringUtils.EMPTY).replace(StringUtils.PX, StringUtils.EMPTY);
       return new Map([['originX', +originValues[0]], ['originY', +originValues[1]]]);
     }
-    return new Map<string, number>();
+    return new Map([['originX', 0], ['originY', 0]]);
   }
 }
