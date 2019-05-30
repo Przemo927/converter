@@ -63,6 +63,7 @@ export class HomeComponent implements OnInit {
         buffer: (<CustomEventTarget>e.target).result
       });
       let tiffCanvas = tiff.toCanvas();
+      Object.defineProperty(tiffCanvas, "pureCanvas", {value: tiff.toCanvas(), writable: false});
       tiffCanvas.id = 'drawing';
       tiffCanvas.style.width = '100%';
       tiffCanvas.style.height = '100%';
