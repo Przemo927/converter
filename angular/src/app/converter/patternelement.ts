@@ -1,6 +1,7 @@
 import {TransformUtils} from "../transformutils";
 import {Pattern} from "./pattern";
 import {StringUtils} from "../stringutils";
+import {PatternUtils} from "../patternutils";
 
 export class PatternElement {
 
@@ -14,19 +15,21 @@ export class PatternElement {
   private patterns: Pattern[] = [];
   private currentNumberOfPatterns: number = 0;
   private actualPattern: Pattern;
+  private coveredPatterns: Pattern[] = [];
+  private ctx: CanvasRenderingContext2D;
 
   constructor(container: HTMLElement, canvas: HTMLCanvasElement, addPatternButton: HTMLElement, removePatternButton: HTMLElement) {
     this.container = container;
     this.canvas = canvas;
     this.removePatternButton = removePatternButton;
     this.addPatternButton = addPatternButton;
+    this.ctx = canvas.getContext('2d');
     this.preparePatternElement(container);
   }
 
   drawPattern(x: number, y: number, width: number, height: number) {
-    const ctx = this.canvas.getContext('2d');
     let color = RGBAGenerator.generateRandomRGBAColor();
-    ctx.fillStyle = color;
+    this.ctx.fillStyle = color;
     let xMin;
     let xMax;
     let yMin;
@@ -47,51 +50,45 @@ export class PatternElement {
       yMax = y + height;
       yMin = y;
     }
-    this.patterns[this.patterns.length] = new Pattern(this.patterns.length, xMin, yMin, xMax, yMax, width, height, ctx.getImageData(xMin, yMin, width + 10, height + 10), color);
+    this.patterns[this.patterns.length] = new Pattern(this.patterns.length, xMin, yMin, xMax, yMax, width, height, this.ctx.getImageData(xMin, yMin, width + 10, height + 10), color);
     this.currentNumberOfPatterns += 1;
-    ctx.fillRect(xMin, yMin, width, height);
+    this.ctx.fillRect(xMin, yMin, width, height);
   }
 
   private movePattern(x: number, y: number, width: number, height: number) {
-    const ctx = this.canvas.getContext('2d');
-    ctx.fillStyle = this.actualPattern.colorOfPattern;
+    this.ctx.fillStyle = this.actualPattern.colorOfPattern;
     if (this.img === undefined || this.img === null) {
-      ctx.putImageData(this.actualPattern.sectionOfImage, this.actualPattern.xMin, this.actualPattern.yMin);
+      this.ctx.putImageData(this.actualPattern.sectionOfImage, this.actualPattern.xMin, this.actualPattern.yMin);
       this.img = this.actualPattern.sectionOfImage;
     } else {
-      ctx.putImageData(this.img, this.actualPattern.xMin, this.actualPattern.yMin);
+      this.ctx.putImageData(this.img, this.actualPattern.xMin, this.actualPattern.yMin);
     }
     this.actualPattern.xMin += x - this.previousX;
     this.actualPattern.yMin += y - this.previousY;
     this.actualPattern.xMax += x - this.previousX;
     this.actualPattern.yMax += y - this.previousY;
-    this.img = ctx.getImageData(this.actualPattern.xMin, this.actualPattern.yMin, width + 10, height + 10);
+    this.img = this.ctx.getImageData(this.actualPattern.xMin, this.actualPattern.yMin, width + 10, height + 10);
     this.actualPattern.sectionOfImage = this.img;
     this.previousX = x;
     this.previousY = y;
-    ctx.fillRect(this.actualPattern.xMin, this.actualPattern.yMin, width, height);
+    this.ctx.fillRect(this.actualPattern.xMin, this.actualPattern.yMin, width, height);
   }
 
   public preparePatternElement(element: HTMLElement) {
-    let coefficientWidth;
-    let coefficientHeight;
     let actualX;
     let actualY;
     let beginningX;
     let beginningY;
     let isAddPatternAvailable;
+    const rectCanvas = this.canvas.getBoundingClientRect();
     const mouseMoveEventBinded = this.mouseMoveEvent.bind(this);
+    const coefficients = this.measureCoeffcients();
     element.addEventListener('mousedown', function (e: MouseEvent) {
       isAddPatternAvailable = this.addPatternButton.addPattern;
-      const rectCanvas = this.canvas.getBoundingClientRect();
-      const currentZoom = TransformUtils.getCurrentZoomOfElement(this.canvas);
-      const rectContainer = this.container.getBoundingClientRect();
-      coefficientWidth = this.canvas.width / rectContainer.width / currentZoom;
-      coefficientHeight = this.canvas.height / rectContainer.height / currentZoom;
       beginningX = e.clientX;
       beginningY = e.clientY;
-      actualX = (e.clientX - rectCanvas.left) * coefficientWidth;
-      actualY = (e.clientY - rectCanvas.top) * coefficientHeight;
+      actualX = (e.clientX - rectCanvas.left) * coefficients[0];
+      actualY = (e.clientY - rectCanvas.top) * coefficients[1];
       if (e.ctrlKey) {
         if (this.removePatternButton.removePattern) {
           this.setEditingPattern(actualX, actualY);
@@ -101,14 +98,17 @@ export class PatternElement {
           this.previousX = actualX;
           this.previousY = actualY;
           this.setEditingPattern(actualX, actualY);
+          this.coveredPatterns = this.coveredPatterns.concat(PatternUtils.returnPatternWhichIsCoveredByDraggingPattern(this.patterns, this.actualPattern));
+          const indexOfCoveredPattern = this.coveredPatterns.indexOf(this.actualPattern);
+          this.refreshSectionOfImageCoveredPattern(indexOfCoveredPattern);
           element.addEventListener('mousemove', mouseMoveEventBinded);
         }
       }
     }.bind(this));
     element.addEventListener('mouseup', function (e) {
         if (e.ctrlKey) {
-          let width = (e.clientX - beginningX) * coefficientWidth;
-          let height = (e.clientY - beginningY) * coefficientHeight;
+          let width = (e.clientX - beginningX) * coefficients[0];
+          let height = (e.clientY - beginningY) * coefficients[1];
           if (isAddPatternAvailable) {
             this.drawPattern(actualX, actualY, width, height);
           }
@@ -118,13 +118,27 @@ export class PatternElement {
     );
   }
 
+  private refreshSectionOfImageCoveredPattern(indexOfCoveredPattern: number) {
+    if (indexOfCoveredPattern !== -1) {
+      PatternUtils.refreshSectionOfImage(this.actualPattern, this.canvas.pureCanvas);
+      this.coveredPatterns.splice(indexOfCoveredPattern, 1);
+    }
+  }
+
+  private measureCoeffcients(): number[] {
+    const currentZoom = TransformUtils.getCurrentZoomOfElement(this.canvas);
+    const rectContainer = this.container.getBoundingClientRect();
+    const coefficientWidth = this.canvas.width / rectContainer.width / currentZoom;
+    const coefficientHeight = this.canvas.height / rectContainer.height / currentZoom;
+    return [coefficientWidth, coefficientHeight];
+  }
+
   private removePattern() {
     if (this.actualPattern !== null && this.actualPattern !== undefined) {
-      const ctx = this.canvas.getContext('2d');
-      ctx.putImageData(this.actualPattern.sectionOfImage, this.actualPattern.xMin, this.actualPattern.yMin);
+      this.ctx.putImageData(this.actualPattern.sectionOfImage, this.actualPattern.xMin, this.actualPattern.yMin);
       const idRemovingPattern = this.actualPattern.id;
       this.patterns.splice(idRemovingPattern, 1);
-      this.renumberPatterns(idRemovingPattern);
+      PatternUtils.renumberPatterns(idRemovingPattern, this.patterns);
     }
   }
 
@@ -137,6 +151,7 @@ export class PatternElement {
     if (this.actualPattern !== null && this.actualPattern !== undefined) {
       this.movePattern(x, y, this.actualPattern.width, this.actualPattern.height);
     }
+    PatternUtils.refreshPatterns(this.coveredPatterns, this.ctx);
   }
 
   private setEditingPattern(x: number, y: number): boolean {
@@ -156,14 +171,6 @@ export class PatternElement {
       }
     }
     this.actualPattern = null;
-  }
-
-  private renumberPatterns(idRemovedPattern: number) {
-    for (let i = idRemovedPattern; i < this.patterns.length; i++) {
-      const pattern = this.patterns[i];
-      pattern.id = i;
-      this.patterns[i] = pattern;
-    }
   }
 }
 
