@@ -2,18 +2,18 @@ import {TransformUtils} from "../transformutils";
 import {Pattern} from "./pattern";
 import {StringUtils} from "../stringutils";
 import {PatternUtils} from "../patternutils";
+import {CustomHTMLCanvasElement, CustomHTMLElement} from "../customelements";
 
 export class PatternElement {
 
   private container: HTMLElement;
-  private canvas: HTMLCanvasElement;
+  private canvas: CustomHTMLCanvasElement;
   private addPatternButton: CustomHTMLElement;
   private removePatternButton: CustomHTMLElement;
   private previousX;
   private previousY;
   private img;
   private patterns: Pattern[] = [];
-  private currentNumberOfPatterns: number = 0;
   private actualPattern: Pattern;
   private coveredPatterns: Pattern[] = [];
   private ctx: CanvasRenderingContext2D;
@@ -51,7 +51,6 @@ export class PatternElement {
       yMin = y;
     }
     this.patterns[this.patterns.length] = new Pattern(this.patterns.length, xMin, yMin, xMax, yMax, width, height, this.ctx.getImageData(xMin, yMin, width + 10, height + 10), color);
-    this.currentNumberOfPatterns += 1;
     this.ctx.fillRect(xMin, yMin, width, height);
   }
 
@@ -80,10 +79,11 @@ export class PatternElement {
     let beginningX;
     let beginningY;
     let isAddPatternAvailable;
+    let coefficients;
     const rectCanvas = this.canvas.getBoundingClientRect();
     const mouseMoveEventBinded = this.mouseMoveEvent.bind(this);
-    const coefficients = this.measureCoeffcients();
     element.addEventListener('mousedown', function (e: MouseEvent) {
+      coefficients = this.measureCoeffcients();
       isAddPatternAvailable = this.addPatternButton.addPattern;
       beginningX = e.clientX;
       beginningY = e.clientY;
@@ -181,9 +181,4 @@ export class RGBAGenerator {
     rgba += Math.floor(Math.random() * 256) + StringUtils.COMMA + Math.floor(Math.random() * 256) + StringUtils.COMMA + Math.floor(Math.random() * 256) + ",1)";
     return rgba;
   }
-}
-
-interface CustomHTMLElement extends HTMLElement {
-  addPattern?: boolean;
-  removePattern?: boolean;
 }
