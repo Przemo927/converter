@@ -98,7 +98,7 @@ export class PatternElement {
           this.previousX = actualX;
           this.previousY = actualY;
           this.setEditingPattern(actualX, actualY);
-          this.coveredPatterns = this.coveredPatterns.concat(PatternUtils.returnPatternWhichIsCoveredByDraggingPattern(this.patterns, this.actualPattern));
+          this.addCoveredPatterns();
           const indexOfCoveredPattern = this.coveredPatterns.indexOf(this.actualPattern);
           this.refreshSectionOfImageCoveredPattern(indexOfCoveredPattern);
           element.addEventListener('mousemove', mouseMoveEventBinded);
@@ -116,6 +116,15 @@ export class PatternElement {
         element.removeEventListener('mousemove', mouseMoveEventBinded);
       }.bind(this)
     );
+  }
+
+  private addCoveredPatterns() {
+    const newConveredPatterns:Pattern[] = PatternUtils.returnPatternWhichIsCoveredByDraggingPattern(this.patterns, this.actualPattern);
+    newConveredPatterns.forEach(pattern=>{
+      if(!this.coveredPatterns.includes(pattern)){
+        this.coveredPatterns.push(pattern);
+      }
+    });
   }
 
   private refreshSectionOfImageCoveredPattern(indexOfCoveredPattern: number) {
