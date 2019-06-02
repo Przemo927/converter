@@ -14,19 +14,8 @@ export class PatternUtils {
     let coveredPatterns = [];
     if (draggingPattern !== null) {
       for (let pattern of patterns) {
-        if ((pattern.xMin > draggingPattern.xMin && pattern.yMin > draggingPattern.yMin
-          && pattern.xMin < draggingPattern.xMax && pattern.yMin < draggingPattern.yMax) ||
-          (pattern.xMax > draggingPattern.xMin && pattern.yMax > draggingPattern.yMin
-            && pattern.xMax < draggingPattern.xMax && pattern.yMax < draggingPattern.yMax) ||
-          (pattern.xMin > draggingPattern.xMin && pattern.yMax > draggingPattern.yMin
-            && pattern.xMin < draggingPattern.xMax && pattern.yMax < draggingPattern.yMax) ||
-          (pattern.xMax > draggingPattern.xMin && pattern.yMin > draggingPattern.yMin
-            && pattern.xMax < draggingPattern.xMax && pattern.yMin < draggingPattern.yMax) ||
-          (pattern.xMin > draggingPattern.xMin && pattern.yMin > draggingPattern.yMin
-            && pattern.xMax < draggingPattern.xMax && pattern.yMax < draggingPattern.yMax) ||
-          (pattern.xMin < draggingPattern.xMin && pattern.yMin < draggingPattern.yMin
-            && pattern.xMax > draggingPattern.xMax && pattern.yMax > draggingPattern.yMax)
-          && pattern.id !== draggingPattern.id) {
+        if (!(pattern.xMin > draggingPattern.xMax || pattern.xMax < draggingPattern.xMin ||
+            pattern.yMin > draggingPattern.yMax || pattern.yMax <draggingPattern.yMin)){
           coveredPatterns[coveredPatterns.length] = pattern;
         }
       }
