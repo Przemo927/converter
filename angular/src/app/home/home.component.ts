@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Converter} from "../converter/converter";
 import {StringUtils} from "../stringutils";
+import {CustomEventTarget, CustomHTMLCanvasElement} from "../customelements";
 
 declare var Tiff: any;
 
@@ -14,6 +15,7 @@ export class HomeComponent implements OnInit {
   private tifType = ['tiff', 'tif'];
   private fileLoader: any;
   private layerContainer: HTMLElement;
+  private converter: Converter;
 
   constructor() {
   }
@@ -33,7 +35,7 @@ export class HomeComponent implements OnInit {
       return;
     }
     const file = files[0];
-    const extensionOfImage = file.name.split('.').pop().toLowerCase();
+    const extensionOfImage = file.name.split(StringUtils.DOT).pop().toLowerCase();
     if (this.tifType.indexOf(extensionOfImage) > -1) {
       this.readTiffImage(file);
     } else {
@@ -47,7 +49,7 @@ export class HomeComponent implements OnInit {
     fileReader.onloadend = () => {
       const srcElement = document.createElement('src');
       (<HTMLSourceElement>srcElement).src = fileReader.result.toString();
-      this.clearContainer();
+      this.removeCanvas();
       this.layerContainer.appendChild(srcElement);
     }
   }
@@ -67,16 +69,25 @@ export class HomeComponent implements OnInit {
       tiffCanvas.id = 'drawing';
       tiffCanvas.style.width = '100%';
       tiffCanvas.style.height = '100%';
-      this.clearContainer();
+      this.removeCanvas();
       this.layerContainer.appendChild(tiffCanvas);
-      Converter.builder().setContainer(this.layerContainer).setImage(tiffCanvas).isDraggable().isZoomable().addFunctionalityOfPattern().build();
+      this.converter = Converter.builder().setContainer(this.layerContainer).setImage(tiffCanvas).isDraggable().isZoomable().addFunctionalityOfPattern().build();
     };
   }
 
-  public clearContainer() {
+  private removeCanvas() {
     while (this.layerContainer.firstChild) {
       this.layerContainer.removeChild(this.layerContainer.firstChild);
     }
+  }
+
+  private clearContainer() {
+    let canvas = <CustomHTMLCanvasElement>this.layerContainer.firstChild;
+    const pureCanvas = canvas.pureCanvas;
+    let ctx = pureCanvas.getContext('2d');
+    const pureImg = ctx.getImageData(0, 0, pureCanvas.width, pureCanvas.height);
+    canvas.getContext('2d').putImageData(pureImg, 0, 0);
+    this.converter.clearPatterns();
   }
 
   private addNewPattern(event) {
@@ -106,9 +117,6 @@ export class HomeComponent implements OnInit {
   }
 }
 
-interface CustomEventTarget extends EventTarget {
-  result: any;
-}
 
 
 
