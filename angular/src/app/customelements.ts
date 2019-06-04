@@ -6,3 +6,7 @@ export interface CustomHTMLElement extends HTMLElement {
 export interface CustomHTMLCanvasElement extends HTMLCanvasElement {
   pureCanvas?: HTMLCanvasElement;
 }
+
+export interface CustomEventTarget extends EventTarget {
+  result: any;
+}
